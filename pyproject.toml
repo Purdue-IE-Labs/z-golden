@@ -1,0 +1,27 @@
+[project]
+name = "z-golden"
+version = "0.0.1"
+authors = [
+    { name = "Matthew Lanum", email = "mlanum@purdue.edu"},
+    { name = "Grayson Nocera", email = "gnocera@purdue.edu"}
+]
+description = "A framework for the Zenoh protocol"
+readme = "README.md"
+dependencies = [
+    "protobuf==6.30.2",
+    "eclipse-zenoh",
+    "json5",
+]
+requires-python = ">=3.11"
+
+[pyproject.optional-dependencies]
+test = [
+    "pytest"
+]
+
+[project.urls]
+Homepage = "https://github.com/Purdue-IE-Labs/z-golden"
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
