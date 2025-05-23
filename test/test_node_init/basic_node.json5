@@ -1,0 +1,13 @@
+{
+  key: "gedge/examples/tag_updates/updater",
+  tags: [
+    {
+      path: "pump_1/temp",
+      base_type: "int",
+    },
+    {
+      path: "pump_1/pressure",
+      base_type: "float",
+    },
+  ],
+}

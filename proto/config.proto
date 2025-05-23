@@ -1,0 +1,87 @@
+syntax = "proto3";
+
+import "base_data.proto"
+
+enum BaseType {
+    UNKNOW = 0;
+    INT = 1;
+    LONG = 2;
+    FLOAT = 3;
+    STRING = 4;
+    BOOL = 5;
+    DATETIME = 6;
+    LIST_INT = 7;
+    LIST_LONG = 8;
+    LIST_FLOAT = 9;
+    LIST_STRING = 10;
+    LIST_BOOL = 11;
+    LIST_DATETIME = 12;
+}
+
+message DataItemConfig {
+    string path = 1;
+    int32 alias = 2;
+    oneof type {
+        DataModelRef model = 3;
+        BaseType base = 4;
+    }
+    repeated Prop props = 5;
+}
+
+message DataModelRef {
+    string model_path = 1;
+    int32 version = 2;
+}
+
+message Prop {
+    string key = 1;
+    BaseType type = 2;
+    BaseData value = 3;
+}
+
+// Models
+message DataModel {
+    string model_path = 1;
+    int32 version = 2;
+    repeated DataItemConfig items = 3;
+}
+
+// Methods
+message MethodConfig {
+    string method_path = 1;
+    repeated DataItemConfig params = 2;
+    repeated ResponseConfig responses = 3;
+}
+
+message ResponseConfig {
+    int32 code = 1;
+    ResponseType type = 2;
+    repeated Prop props = 3;
+    repeated DataItemConfig body = 4;
+}
+
+enum ResponseType {
+    OK = 1;
+    ERR = 2;
+    INFO = 3;
+}
+
+// Subnode
+message SubnodeConfig {
+    string name = 1;
+    repeated DataItemConfig tags = 2;
+    repeated MethodConfig methods = 3;
+    repeated SubnodeConfig subnodes = 4;
+    repeated Props props = 5;
+}
+
+// Publsihed on /META key   
+message Meta {
+    string node_key = 1;
+    int32 meta_hash = 2;
+    repeated DataItemConfig tags = 3;
+    repeated MethodConfig methods = 4;
+    repeated SubnodeConfig subnodes = 5;
+    repeated DataModel models = 6;
+    repeated Prop props = 7;
+}
