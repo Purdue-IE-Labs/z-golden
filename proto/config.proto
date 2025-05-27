@@ -1,21 +1,19 @@
 syntax = "proto3";
 
-import "base_data.proto"
+import "base_data.proto";
 
 enum BaseType {
-    UNKNOW = 0;
+    UNKNOWN = 0;
     INT = 1;
     LONG = 2;
     FLOAT = 3;
     STRING = 4;
     BOOL = 5;
-    DATETIME = 6;
-    LIST_INT = 7;
-    LIST_LONG = 8;
-    LIST_FLOAT = 9;
-    LIST_STRING = 10;
-    LIST_BOOL = 11;
-    LIST_DATETIME = 12;
+    LIST_INT = 6;
+    LIST_LONG = 7;
+    LIST_FLOAT = 8;
+    LIST_STRING = 9;
+    LIST_BOOL = 10;
 }
 
 message DataItemConfig {
@@ -61,9 +59,9 @@ message ResponseConfig {
 }
 
 enum ResponseType {
-    OK = 1;
-    ERR = 2;
-    INFO = 3;
+    OK = 0;
+    ERR = 1;
+    INFO = 2;
 }
 
 // Subnode
@@ -72,16 +70,15 @@ message SubnodeConfig {
     repeated DataItemConfig tags = 2;
     repeated MethodConfig methods = 3;
     repeated SubnodeConfig subnodes = 4;
-    repeated Props props = 5;
+    repeated Prop props = 5;
 }
 
 // Publsihed on /META key   
 message Meta {
     string node_key = 1;
-    int32 meta_hash = 2;
-    repeated DataItemConfig tags = 3;
-    repeated MethodConfig methods = 4;
-    repeated SubnodeConfig subnodes = 5;
-    repeated DataModel models = 6;
-    repeated Prop props = 7;
+    repeated DataItemConfig tags = 2;
+    repeated MethodConfig methods = 3;
+    repeated SubnodeConfig subnodes = 4;
+    repeated DataModel models = 5;
+    repeated Prop props = 6;
 }

@@ -17,7 +17,7 @@ with zenoh.open(zenoh.Config()) as session:
     
     # Question is can we get this int back into a zenoh selector for _time
     # Zenoh timestamps are made from the 64bit time AND session ID which should be UUID...
-    # 
+    # But you can use _time selector with just the time portion 
     zombie = zenoh.Timestamp()
     sdfafs = zombie == test_t_1
     print(test)

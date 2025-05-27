@@ -1,16 +1,16 @@
 syntax = "proto3";
 
-import "base_data.proto"
+import "base_data.proto";
 
 // Published on /DATA keys
 message TagUpdate {
-    map<alias, BaseData> tags = 1;
-    int32 meta_hash = 2;
+    map<int32, BaseData> tags = 1; // maps alias to BaseData
+    fixed64 meta_ts = 2;
 }
 
 // Sent to queryable declared on /METHODS/.. 
 message MethodCall {
-    map<alias, BaseData> params = 1;
+    map<int32, BaseData> params = 1;
     
 }
 
