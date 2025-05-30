@@ -1,1 +1,1 @@
-from .node.node import NodeConfig
+from .node.config import NodeConfig

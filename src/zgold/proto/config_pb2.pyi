@@ -57,12 +57,12 @@ class DataItemConfig(_message.Message):
     def __init__(self, path: _Optional[str] = ..., alias: _Optional[int] = ..., model: _Optional[_Union[DataModelRef, _Mapping]] = ..., base: _Optional[_Union[BaseType, str]] = ..., props: _Optional[_Iterable[_Union[Prop, _Mapping]]] = ...) -> None: ...
 
 class DataModelRef(_message.Message):
-    __slots__ = ("model_path", "version")
+    __slots__ = ("model_path", "model_version")
     MODEL_PATH_FIELD_NUMBER: _ClassVar[int]
-    VERSION_FIELD_NUMBER: _ClassVar[int]
+    MODEL_VERSION_FIELD_NUMBER: _ClassVar[int]
     model_path: str
-    version: int
-    def __init__(self, model_path: _Optional[str] = ..., version: _Optional[int] = ...) -> None: ...
+    model_version: int
+    def __init__(self, model_path: _Optional[str] = ..., model_version: _Optional[int] = ...) -> None: ...
 
 class Prop(_message.Message):
     __slots__ = ("key", "type", "value")
@@ -74,25 +74,25 @@ class Prop(_message.Message):
     value: _base_data_pb2.BaseData
     def __init__(self, key: _Optional[str] = ..., type: _Optional[_Union[BaseType, str]] = ..., value: _Optional[_Union[_base_data_pb2.BaseData, _Mapping]] = ...) -> None: ...
 
-class DataModel(_message.Message):
-    __slots__ = ("model_path", "version", "items")
-    MODEL_PATH_FIELD_NUMBER: _ClassVar[int]
+class DataModelConfig(_message.Message):
+    __slots__ = ("path", "version", "items")
+    PATH_FIELD_NUMBER: _ClassVar[int]
     VERSION_FIELD_NUMBER: _ClassVar[int]
     ITEMS_FIELD_NUMBER: _ClassVar[int]
-    model_path: str
+    path: str
     version: int
     items: _containers.RepeatedCompositeFieldContainer[DataItemConfig]
-    def __init__(self, model_path: _Optional[str] = ..., version: _Optional[int] = ..., items: _Optional[_Iterable[_Union[DataItemConfig, _Mapping]]] = ...) -> None: ...
+    def __init__(self, path: _Optional[str] = ..., version: _Optional[int] = ..., items: _Optional[_Iterable[_Union[DataItemConfig, _Mapping]]] = ...) -> None: ...
 
 class MethodConfig(_message.Message):
-    __slots__ = ("method_path", "params", "responses")
-    METHOD_PATH_FIELD_NUMBER: _ClassVar[int]
+    __slots__ = ("path", "params", "responses")
+    PATH_FIELD_NUMBER: _ClassVar[int]
     PARAMS_FIELD_NUMBER: _ClassVar[int]
     RESPONSES_FIELD_NUMBER: _ClassVar[int]
-    method_path: str
+    path: str
     params: _containers.RepeatedCompositeFieldContainer[DataItemConfig]
     responses: _containers.RepeatedCompositeFieldContainer[ResponseConfig]
-    def __init__(self, method_path: _Optional[str] = ..., params: _Optional[_Iterable[_Union[DataItemConfig, _Mapping]]] = ..., responses: _Optional[_Iterable[_Union[ResponseConfig, _Mapping]]] = ...) -> None: ...
+    def __init__(self, path: _Optional[str] = ..., params: _Optional[_Iterable[_Union[DataItemConfig, _Mapping]]] = ..., responses: _Optional[_Iterable[_Union[ResponseConfig, _Mapping]]] = ...) -> None: ...
 
 class ResponseConfig(_message.Message):
     __slots__ = ("code", "type", "props", "body")
@@ -107,18 +107,18 @@ class ResponseConfig(_message.Message):
     def __init__(self, code: _Optional[int] = ..., type: _Optional[_Union[ResponseType, str]] = ..., props: _Optional[_Iterable[_Union[Prop, _Mapping]]] = ..., body: _Optional[_Iterable[_Union[DataItemConfig, _Mapping]]] = ...) -> None: ...
 
 class SubnodeConfig(_message.Message):
-    __slots__ = ("name", "tags", "methods", "subnodes", "props")
-    NAME_FIELD_NUMBER: _ClassVar[int]
+    __slots__ = ("path", "tags", "methods", "subnodes", "props")
+    PATH_FIELD_NUMBER: _ClassVar[int]
     TAGS_FIELD_NUMBER: _ClassVar[int]
     METHODS_FIELD_NUMBER: _ClassVar[int]
     SUBNODES_FIELD_NUMBER: _ClassVar[int]
     PROPS_FIELD_NUMBER: _ClassVar[int]
-    name: str
+    path: str
     tags: _containers.RepeatedCompositeFieldContainer[DataItemConfig]
     methods: _containers.RepeatedCompositeFieldContainer[MethodConfig]
     subnodes: _containers.RepeatedCompositeFieldContainer[SubnodeConfig]
     props: _containers.RepeatedCompositeFieldContainer[Prop]
-    def __init__(self, name: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[DataItemConfig, _Mapping]]] = ..., methods: _Optional[_Iterable[_Union[MethodConfig, _Mapping]]] = ..., subnodes: _Optional[_Iterable[_Union[SubnodeConfig, _Mapping]]] = ..., props: _Optional[_Iterable[_Union[Prop, _Mapping]]] = ...) -> None: ...
+    def __init__(self, path: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[DataItemConfig, _Mapping]]] = ..., methods: _Optional[_Iterable[_Union[MethodConfig, _Mapping]]] = ..., subnodes: _Optional[_Iterable[_Union[SubnodeConfig, _Mapping]]] = ..., props: _Optional[_Iterable[_Union[Prop, _Mapping]]] = ...) -> None: ...
 
 class Meta(_message.Message):
     __slots__ = ("node_key", "tags", "methods", "subnodes", "models", "props")
@@ -132,6 +132,6 @@ class Meta(_message.Message):
     tags: _containers.RepeatedCompositeFieldContainer[DataItemConfig]
     methods: _containers.RepeatedCompositeFieldContainer[MethodConfig]
     subnodes: _containers.RepeatedCompositeFieldContainer[SubnodeConfig]
-    models: _containers.RepeatedCompositeFieldContainer[DataModel]
+    models: _containers.RepeatedCompositeFieldContainer[DataModelConfig]
     props: _containers.RepeatedCompositeFieldContainer[Prop]
-    def __init__(self, node_key: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[DataItemConfig, _Mapping]]] = ..., methods: _Optional[_Iterable[_Union[MethodConfig, _Mapping]]] = ..., subnodes: _Optional[_Iterable[_Union[SubnodeConfig, _Mapping]]] = ..., models: _Optional[_Iterable[_Union[DataModel, _Mapping]]] = ..., props: _Optional[_Iterable[_Union[Prop, _Mapping]]] = ...) -> None: ...
+    def __init__(self, node_key: _Optional[str] = ..., tags: _Optional[_Iterable[_Union[DataItemConfig, _Mapping]]] = ..., methods: _Optional[_Iterable[_Union[MethodConfig, _Mapping]]] = ..., subnodes: _Optional[_Iterable[_Union[SubnodeConfig, _Mapping]]] = ..., models: _Optional[_Iterable[_Union[DataModelConfig, _Mapping]]] = ..., props: _Optional[_Iterable[_Union[Prop, _Mapping]]] = ...) -> None: ...

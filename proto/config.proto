@@ -28,7 +28,7 @@ message DataItemConfig {
 
 message DataModelRef {
     string model_path = 1;
-    int32 version = 2;
+    int32 model_version = 2;
 }
 
 message Prop {
@@ -38,15 +38,15 @@ message Prop {
 }
 
 // Models
-message DataModel {
-    string model_path = 1;
+message DataModelConfig {
+    string path = 1;
     int32 version = 2;
     repeated DataItemConfig items = 3;
 }
 
 // Methods
 message MethodConfig {
-    string method_path = 1;
+    string path = 1;
     repeated DataItemConfig params = 2;
     repeated ResponseConfig responses = 3;
 }
@@ -66,7 +66,7 @@ enum ResponseType {
 
 // Subnode
 message SubnodeConfig {
-    string name = 1;
+    string path = 1;
     repeated DataItemConfig tags = 2;
     repeated MethodConfig methods = 3;
     repeated SubnodeConfig subnodes = 4;
@@ -79,6 +79,6 @@ message Meta {
     repeated DataItemConfig tags = 2;
     repeated MethodConfig methods = 3;
     repeated SubnodeConfig subnodes = 4;
-    repeated DataModel models = 5;
+    repeated DataModelConfig models = 5;
     repeated Prop props = 6;
 }

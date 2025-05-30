@@ -8,7 +8,7 @@ authors = [
 description = "A framework for the Zenoh protocol"
 readme = "README.md"
 dependencies = [
-    "protobuf==6.30.2",
+    "protobuf==6.31.0",
     "eclipse-zenoh",
     "json5",
 ]

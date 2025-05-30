@@ -1,0 +1,2 @@
+
+# MethodHandler = Callable[[MethodQuery], None]

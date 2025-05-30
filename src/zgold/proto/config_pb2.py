@@ -25,31 +25,31 @@ _sym_db = _symbol_database.Default()
 from . import base_data_pb2 as base__data__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0c\x63onfig.proto\x1a\x0f\x62\x61se_data.proto\"\x86\x01\n\x0e\x44\x61taItemConfig\x12\x0c\n\x04path\x18\x01 \x01(\t\x12\r\n\x05\x61lias\x18\x02 \x01(\x05\x12\x1e\n\x05model\x18\x03 \x01(\x0b\x32\r.DataModelRefH\x00\x12\x19\n\x04\x62\x61se\x18\x04 \x01(\x0e\x32\t.BaseTypeH\x00\x12\x14\n\x05props\x18\x05 \x03(\x0b\x32\x05.PropB\x06\n\x04type\"3\n\x0c\x44\x61taModelRef\x12\x12\n\nmodel_path\x18\x01 \x01(\t\x12\x0f\n\x07version\x18\x02 \x01(\x05\"F\n\x04Prop\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x17\n\x04type\x18\x02 \x01(\x0e\x32\t.BaseType\x12\x18\n\x05value\x18\x03 \x01(\x0b\x32\t.BaseData\"P\n\tDataModel\x12\x12\n\nmodel_path\x18\x01 \x01(\t\x12\x0f\n\x07version\x18\x02 \x01(\x05\x12\x1e\n\x05items\x18\x03 \x03(\x0b\x32\x0f.DataItemConfig\"h\n\x0cMethodConfig\x12\x13\n\x0bmethod_path\x18\x01 \x01(\t\x12\x1f\n\x06params\x18\x02 \x03(\x0b\x32\x0f.DataItemConfig\x12\"\n\tresponses\x18\x03 \x03(\x0b\x32\x0f.ResponseConfig\"p\n\x0eResponseConfig\x12\x0c\n\x04\x63ode\x18\x01 \x01(\x05\x12\x1b\n\x04type\x18\x02 \x01(\x0e\x32\r.ResponseType\x12\x14\n\x05props\x18\x03 \x03(\x0b\x32\x05.Prop\x12\x1d\n\x04\x62ody\x18\x04 \x03(\x0b\x32\x0f.DataItemConfig\"\x94\x01\n\rSubnodeConfig\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x1d\n\x04tags\x18\x02 \x03(\x0b\x32\x0f.DataItemConfig\x12\x1e\n\x07methods\x18\x03 \x03(\x0b\x32\r.MethodConfig\x12 \n\x08subnodes\x18\x04 \x03(\x0b\x32\x0e.SubnodeConfig\x12\x14\n\x05props\x18\x05 \x03(\x0b\x32\x05.Prop\"\xab\x01\n\x04Meta\x12\x10\n\x08node_key\x18\x01 \x01(\t\x12\x1d\n\x04tags\x18\x02 \x03(\x0b\x32\x0f.DataItemConfig\x12\x1e\n\x07methods\x18\x03 \x03(\x0b\x32\r.MethodConfig\x12 \n\x08subnodes\x18\x04 \x03(\x0b\x32\x0e.SubnodeConfig\x12\x1a\n\x06models\x18\x05 \x03(\x0b\x32\n.DataModel\x12\x14\n\x05props\x18\x06 \x03(\x0b\x32\x05.Prop*\x98\x01\n\x08\x42\x61seType\x12\x0b\n\x07UNKNOWN\x10\x00\x12\x07\n\x03INT\x10\x01\x12\x08\n\x04LONG\x10\x02\x12\t\n\x05\x46LOAT\x10\x03\x12\n\n\x06STRING\x10\x04\x12\x08\n\x04\x42OOL\x10\x05\x12\x0c\n\x08LIST_INT\x10\x06\x12\r\n\tLIST_LONG\x10\x07\x12\x0e\n\nLIST_FLOAT\x10\x08\x12\x0f\n\x0bLIST_STRING\x10\t\x12\r\n\tLIST_BOOL\x10\n*)\n\x0cResponseType\x12\x06\n\x02OK\x10\x00\x12\x07\n\x03\x45RR\x10\x01\x12\x08\n\x04INFO\x10\x02\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0c\x63onfig.proto\x1a\x0f\x62\x61se_data.proto\"\x86\x01\n\x0e\x44\x61taItemConfig\x12\x0c\n\x04path\x18\x01 \x01(\t\x12\r\n\x05\x61lias\x18\x02 \x01(\x05\x12\x1e\n\x05model\x18\x03 \x01(\x0b\x32\r.DataModelRefH\x00\x12\x19\n\x04\x62\x61se\x18\x04 \x01(\x0e\x32\t.BaseTypeH\x00\x12\x14\n\x05props\x18\x05 \x03(\x0b\x32\x05.PropB\x06\n\x04type\"9\n\x0c\x44\x61taModelRef\x12\x12\n\nmodel_path\x18\x01 \x01(\t\x12\x15\n\rmodel_version\x18\x02 \x01(\x05\"F\n\x04Prop\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x17\n\x04type\x18\x02 \x01(\x0e\x32\t.BaseType\x12\x18\n\x05value\x18\x03 \x01(\x0b\x32\t.BaseData\"P\n\x0f\x44\x61taModelConfig\x12\x0c\n\x04path\x18\x01 \x01(\t\x12\x0f\n\x07version\x18\x02 \x01(\x05\x12\x1e\n\x05items\x18\x03 \x03(\x0b\x32\x0f.DataItemConfig\"a\n\x0cMethodConfig\x12\x0c\n\x04path\x18\x01 \x01(\t\x12\x1f\n\x06params\x18\x02 \x03(\x0b\x32\x0f.DataItemConfig\x12\"\n\tresponses\x18\x03 \x03(\x0b\x32\x0f.ResponseConfig\"p\n\x0eResponseConfig\x12\x0c\n\x04\x63ode\x18\x01 \x01(\x05\x12\x1b\n\x04type\x18\x02 \x01(\x0e\x32\r.ResponseType\x12\x14\n\x05props\x18\x03 \x03(\x0b\x32\x05.Prop\x12\x1d\n\x04\x62ody\x18\x04 \x03(\x0b\x32\x0f.DataItemConfig\"\x94\x01\n\rSubnodeConfig\x12\x0c\n\x04path\x18\x01 \x01(\t\x12\x1d\n\x04tags\x18\x02 \x03(\x0b\x32\x0f.DataItemConfig\x12\x1e\n\x07methods\x18\x03 \x03(\x0b\x32\r.MethodConfig\x12 \n\x08subnodes\x18\x04 \x03(\x0b\x32\x0e.SubnodeConfig\x12\x14\n\x05props\x18\x05 \x03(\x0b\x32\x05.Prop\"\xb1\x01\n\x04Meta\x12\x10\n\x08node_key\x18\x01 \x01(\t\x12\x1d\n\x04tags\x18\x02 \x03(\x0b\x32\x0f.DataItemConfig\x12\x1e\n\x07methods\x18\x03 \x03(\x0b\x32\r.MethodConfig\x12 \n\x08subnodes\x18\x04 \x03(\x0b\x32\x0e.SubnodeConfig\x12 \n\x06models\x18\x05 \x03(\x0b\x32\x10.DataModelConfig\x12\x14\n\x05props\x18\x06 \x03(\x0b\x32\x05.Prop*\x98\x01\n\x08\x42\x61seType\x12\x0b\n\x07UNKNOWN\x10\x00\x12\x07\n\x03INT\x10\x01\x12\x08\n\x04LONG\x10\x02\x12\t\n\x05\x46LOAT\x10\x03\x12\n\n\x06STRING\x10\x04\x12\x08\n\x04\x42OOL\x10\x05\x12\x0c\n\x08LIST_INT\x10\x06\x12\r\n\tLIST_LONG\x10\x07\x12\x0e\n\nLIST_FLOAT\x10\x08\x12\x0f\n\x0bLIST_STRING\x10\t\x12\r\n\tLIST_BOOL\x10\n*)\n\x0cResponseType\x12\x06\n\x02OK\x10\x00\x12\x07\n\x03\x45RR\x10\x01\x12\x08\n\x04INFO\x10\x02\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'config_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_BASETYPE']._serialized_start=923
-  _globals['_BASETYPE']._serialized_end=1075
-  _globals['_RESPONSETYPE']._serialized_start=1077
-  _globals['_RESPONSETYPE']._serialized_end=1118
+  _globals['_BASETYPE']._serialized_start=928
+  _globals['_BASETYPE']._serialized_end=1080
+  _globals['_RESPONSETYPE']._serialized_start=1082
+  _globals['_RESPONSETYPE']._serialized_end=1123
   _globals['_DATAITEMCONFIG']._serialized_start=34
   _globals['_DATAITEMCONFIG']._serialized_end=168
   _globals['_DATAMODELREF']._serialized_start=170
-  _globals['_DATAMODELREF']._serialized_end=221
-  _globals['_PROP']._serialized_start=223
-  _globals['_PROP']._serialized_end=293
-  _globals['_DATAMODEL']._serialized_start=295
-  _globals['_DATAMODEL']._serialized_end=375
-  _globals['_METHODCONFIG']._serialized_start=377
-  _globals['_METHODCONFIG']._serialized_end=481
-  _globals['_RESPONSECONFIG']._serialized_start=483
-  _globals['_RESPONSECONFIG']._serialized_end=595
-  _globals['_SUBNODECONFIG']._serialized_start=598
-  _globals['_SUBNODECONFIG']._serialized_end=746
-  _globals['_META']._serialized_start=749
-  _globals['_META']._serialized_end=920
+  _globals['_DATAMODELREF']._serialized_end=227
+  _globals['_PROP']._serialized_start=229
+  _globals['_PROP']._serialized_end=299
+  _globals['_DATAMODELCONFIG']._serialized_start=301
+  _globals['_DATAMODELCONFIG']._serialized_end=381
+  _globals['_METHODCONFIG']._serialized_start=383
+  _globals['_METHODCONFIG']._serialized_end=480
+  _globals['_RESPONSECONFIG']._serialized_start=482
+  _globals['_RESPONSECONFIG']._serialized_end=594
+  _globals['_SUBNODECONFIG']._serialized_start=597
+  _globals['_SUBNODECONFIG']._serialized_end=745
+  _globals['_META']._serialized_start=748
+  _globals['_META']._serialized_end=925
 # @@protoc_insertion_point(module_scope)
