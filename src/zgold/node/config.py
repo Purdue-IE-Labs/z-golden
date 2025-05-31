@@ -3,6 +3,7 @@ from zgold import proto
 from typing import Self, Any
 import pathlib
 import json5
+from .base_type import BaseType
 
 class NodeConfig:
     def __init__(self, key: str):
@@ -99,4 +100,27 @@ class PyDataItemConfig:
     def from_json5(cls, j: Any) -> Self:
         if not isinstance(j, dict):
             raise ValueError(f"invalid data item, expected dict, got {j}")
-        
+        # TODO: validate path and type are present 
+        #validate if type is model or list[model], that the tag must include model_path
+        # TODO: validate model version exists 
+        for prop in j.get('props', {}).items():
+            pass
+        props = PyProp.from_json5()
+        if j['type'] == 'model' or j['type'] == 'list[model]':
+           pass
+        else:
+            pass
+
+@dataclass
+class PyProp:
+    proto: proto.Prop
+
+    @classmethod
+    def from_json5(cls, key: str, j: Any) -> Self:
+        if isinstance(j, dict):
+            # this is for if they want to specify both type and value
+            raise NotImplementedError
+        t = PyProp.intuit_type(j)
+        res = BaseData.from_value(j, t)
+        return cls(key, res)
+ 
