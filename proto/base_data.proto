@@ -1,5 +1,6 @@
 syntax = "proto3";
-
+import "google/protobuf/timestamp.proto";
+// import "timestamp.proto";
 // These messages are defined because "repeated" is not allowed in a "oneof"
 message ListInt {
     repeated uint32 list = 1;
@@ -17,6 +18,10 @@ message ListBool {
     repeated bool list = 1;
 }
 
+message ListDatetime {
+    repeated google.protobuf.Timestamp list = 1;
+}
+
 message BaseData{
     oneof data {
         uint32 int_data = 1;
@@ -24,10 +29,12 @@ message BaseData{
         float float_data = 3;
         string string_data = 4;
         bool bool_data = 5;
-        ListInt list_int_data = 6;
-        ListLong list_long_data = 7;
-        ListFloat list_float_data = 8;
-        ListString list_string_data = 9;
-        ListBool list_bool_data = 10;
+        google.protobuf.Timestamp datetime_data = 6;
+        ListInt list_int_data = 7;
+        ListLong list_long_data = 8;
+        ListFloat list_float_data = 9;
+        ListString list_string_data = 10;
+        ListBool list_bool_data = 11;
+        ListDatetime list_datetime_data = 12;
     };
 }

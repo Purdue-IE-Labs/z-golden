@@ -9,11 +9,7 @@ enum BaseType {
     FLOAT = 3;
     STRING = 4;
     BOOL = 5;
-    LIST_INT = 6;
-    LIST_LONG = 7;
-    LIST_FLOAT = 8;
-    LIST_STRING = 9;
-    LIST_BOOL = 10;
+    DATETIME = 6;
 }
 
 message DataItemConfig {

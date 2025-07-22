@@ -16,11 +16,7 @@ class BaseType(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     FLOAT: _ClassVar[BaseType]
     STRING: _ClassVar[BaseType]
     BOOL: _ClassVar[BaseType]
-    LIST_INT: _ClassVar[BaseType]
-    LIST_LONG: _ClassVar[BaseType]
-    LIST_FLOAT: _ClassVar[BaseType]
-    LIST_STRING: _ClassVar[BaseType]
-    LIST_BOOL: _ClassVar[BaseType]
+    DATETIME: _ClassVar[BaseType]
 
 class ResponseType(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = ()
@@ -33,11 +29,7 @@ LONG: BaseType
 FLOAT: BaseType
 STRING: BaseType
 BOOL: BaseType
-LIST_INT: BaseType
-LIST_LONG: BaseType
-LIST_FLOAT: BaseType
-LIST_STRING: BaseType
-LIST_BOOL: BaseType
+DATETIME: BaseType
 OK: ResponseType
 ERR: ResponseType
 INFO: ResponseType

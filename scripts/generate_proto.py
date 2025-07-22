@@ -1,16 +1,25 @@
 import subprocess
 import pathlib
-import shutil
 
 here = pathlib.Path(__file__).parents[1]
 proto_folder = here / "proto"
 python_proto_folder = here / "src" / "zgold" / "proto"
 # print("protoc resolved to:", shutil.which("protoc"))
 
-PROTOC_EXE = r"C:\Program Files\protoc\bin\protoc.exe"
+res = subprocess.run(["protoc", f"--proto_path={str(proto_folder)}", f"--python_out=pyi_out:{str(python_proto_folder)}", f"{str(proto_folder)}\\*.proto"])
 
-res = subprocess.run([PROTOC_EXE, f"--proto_path={str(proto_folder)}", f"--python_out=pyi_out:{str(python_proto_folder)}", f"{str(proto_folder)}\\*.proto"])
-# res = subprocess.run(["protoc", f"--proto_path={str(proto_folder)}", f"--python_out=pyi_out:{str(python_proto_folder)}", f"{str(proto_folder)}\\*.proto"])
+# protoc_include = "C:\Program Files\protoc\include"
+# res = subprocess.run(["protoc", f"--proto_path={str(proto_folder)}",f"--proto_path={str(protoc_include)}" f"--python_out=pyi_out:{str(python_proto_folder)}", f"{str(proto_folder)}\\*.proto"])
+
+# res = subprocess.run([
+#     "protoc",
+#     f"--proto_path={proto_folder}",
+#     f"--proto_path={PROTOC_INCLUDE}",
+#     f"--python_out={python_proto_folder}",
+#     *proto_files
+# ], capture_output=True, text=True)
+
+
 if res.returncode != 0:
     print("error generating protobuf files:")
     print(res.stderr)
