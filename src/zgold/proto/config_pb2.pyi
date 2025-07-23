@@ -35,18 +35,20 @@ ERR: ResponseType
 INFO: ResponseType
 
 class DataItemConfig(_message.Message):
-    __slots__ = ("path", "alias", "model", "base", "props")
+    __slots__ = ("path", "alias", "is_list", "model", "base", "props")
     PATH_FIELD_NUMBER: _ClassVar[int]
     ALIAS_FIELD_NUMBER: _ClassVar[int]
+    IS_LIST_FIELD_NUMBER: _ClassVar[int]
     MODEL_FIELD_NUMBER: _ClassVar[int]
     BASE_FIELD_NUMBER: _ClassVar[int]
     PROPS_FIELD_NUMBER: _ClassVar[int]
     path: str
     alias: int
+    is_list: bool
     model: DataModelRef
     base: BaseType
     props: _containers.RepeatedCompositeFieldContainer[Prop]
-    def __init__(self, path: _Optional[str] = ..., alias: _Optional[int] = ..., model: _Optional[_Union[DataModelRef, _Mapping]] = ..., base: _Optional[_Union[BaseType, str]] = ..., props: _Optional[_Iterable[_Union[Prop, _Mapping]]] = ...) -> None: ...
+    def __init__(self, path: _Optional[str] = ..., alias: _Optional[int] = ..., is_list: bool = ..., model: _Optional[_Union[DataModelRef, _Mapping]] = ..., base: _Optional[_Union[BaseType, str]] = ..., props: _Optional[_Iterable[_Union[Prop, _Mapping]]] = ...) -> None: ...
 
 class DataModelRef(_message.Message):
     __slots__ = ("model_path", "model_version")

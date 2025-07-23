@@ -15,11 +15,12 @@ enum BaseType {
 message DataItemConfig {
     string path = 1;
     int32 alias = 2;
+    bool is_list = 3;
     oneof type {
-        DataModelRef model = 3;
-        BaseType base = 4;
+        DataModelRef model = 4;
+        BaseType base = 5;
     }
-    repeated Prop props = 5;
+    repeated Prop props = 6;
 }
 
 message DataModelRef {
@@ -33,14 +34,12 @@ message Prop {
     BaseData value = 3;
 }
 
-// Models
 message DataModelConfig {
     string path = 1;
     int32 version = 2;
     repeated DataItemConfig items = 3;
 }
 
-// Methods
 message MethodConfig {
     string path = 1;
     repeated DataItemConfig params = 2;
@@ -60,7 +59,6 @@ enum ResponseType {
     INFO = 2;
 }
 
-// Subnode
 message SubnodeConfig {
     string path = 1;
     repeated DataItemConfig tags = 2;

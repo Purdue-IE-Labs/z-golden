@@ -1,7 +1,10 @@
 {
-    "python.testing.pytestArgs": [
-        "test"
-    ],
-    "python.testing.unittestEnabled": false,
-    "python.testing.pytestEnabled": true
+  // make sure pytest is enabled…
+  "python.testing.pytestEnabled": true,
+  "python.testing.pytestArgs": ["test"],             // or ["test/test_node_startup"] 
+  "python.testing.pytestUseLegacyTestDiscovery": true,
+
+  // …then enable the CodeLens buttons above each test fn:
+  "python.testing.codelensEnabled": true,
+  "python.testing.debugCodeLensEnabled": true
 }

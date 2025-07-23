@@ -1,126 +1,157 @@
-from dataclasses import dataclass
-from zgold import proto
-from typing import Self, Any
-import pathlib
 import json5
-from .base_type import BaseType
+from typing import Any, Dict, Self
 
+from zgold.proto import config_pb2
+
+# Proto classes
+Meta = config_pb2.Meta
+DataItemConfig = config_pb2.DataItemConfig
+DataModelRef = config_pb2.DataModelRef
+Prop = config_pb2.Prop
+DataModelConfig = config_pb2.DataModelConfig
+MethodConfig = config_pb2.MethodConfig
+ResponseConfig = config_pb2.ResponseConfig
+SubnodeConfig = config_pb2.SubnodeConfig
+BaseType = config_pb2.BaseType
+
+# TODO: Validate names against reserved keywords and characters in various programming languages and OS
 class NodeConfig:
-    def __init__(self, key: str):
-        self._user_key = key
-        # self.ks = NodeKeySpace.from_user_key(key)
-        self.tags: dict[str, PyDataItemConfig] = dict()
-        self.methods: dict[str, PyMethodConfig] = dict()
-        self.subnodes: dict[str, PySubnodeConfig] = dict()
-        # self.models: dict[str, DataModelConfig] = dict()
+    """
+    Load a JSON5-based configuration and compile it into a protobuf Meta message.
+    """
+
+    def __init__(self, meta: Meta):
+        self.meta = meta
+        # method callbacks
+        # model file locations
 
     @classmethod
-    def from_json5(cls, path: str):
-        '''
-        Creates a new node by loading the opening the parameter path with read persmissions to json5 and returns the NodeConfig of the new node
-        
-        Arguments:
-            cls (type[Self@NodeConfig]): The NodeConfig class
-            path (str): The path being opened on and loaded into json5
+    def from_json5(cls, path: str) -> Self:
+        # Parse the JSON5 file
+        with open(path, 'r') as fp:
+            raw = json5.load(fp)
+        m = Meta()
+        m.node_key = raw['key']
 
-        Returns:
-            NodeConfig
-        '''
-        if not pathlib.Path(path).exists():
-            raise ValueError(f"Node configuration at path {path} does not exist")
-        if pathlib.Path(path).is_dir():
-            raise ValueError(f"Node configuration at path {path} is a directory")
-        with open(path, "r") as f:
-            node: dict[str, Any] = json5.load(f)
-        return cls._config_from_json5_obj(node)
+        # Tags
+        for tag in raw.get('tags', []):
+            m.tags.append(cls._build_data_item_config(tag))
+
+        # Models
+        # TODO: Read from set model dir
+        # for model in raw.get('models', []):
+        #     m.models.append(cls._build_data_model_config(model))
+
+        # Methods
+        for method in raw.get('methods', []):
+            m.methods.append(cls._build_method_config(method))
+
+        # Subnodes
+        for sub in raw.get('subnodes', []):
+            m.subnodes.append(cls._build_subnode_config(sub))
+
+        # Props
+        for key, val in raw.get('props', {}).items():
+            m.props.append(cls._build_prop(key, val))
+
+        return cls(m)
     
-    @classmethod
-    def from_json5_str(cls, string: str):
-        '''
-        Creates a new node by loading the parameter string to json5 and returns the NodeConfig of the new node
-        
-        Arguments:
-            cls (type[Self@NodeConfig]): The NodeConfig class
-            string (str): The string being directly loaded to json5
+    def use_models_at(path: str):
+        pass
 
-        Returns:
-            NodeConfig
-        '''
-        node: dict[str, Any] = json5.loads(string) # type: ignore
-        return cls._config_from_json5_obj(node)
+    @classmethod
+    def _build_data_item_config(cls, cfg: Dict[str, Any]) -> DataItemConfig:
+        # path, alias, is_list, oneof{model, base}, props
+        # TODO: Add unique int alias to every data item 
+        item = DataItemConfig()
+        item.path = cfg['path']
+        item.is_list = isinstance(cfg.get('type'), str) and cfg['type'].startswith('list[')
+        type_str = cfg['type']
+
+        # Unwrap list[...] if present
+        inner = type_str[5:-1] if item.is_list else type_str
+
+        if inner == 'model':
+            item.model.model_path = cfg['model_path']
+            item.model.model_version = cfg.get('model_version', cls._default_model_version(cfg['model_path']))
+        else:
+            item.base = cls._map_base_type(inner)
+
+        # Attach any props
+        for k, v in cfg.get('props', {}).items():
+            item.props.append(cls._build_prop(k, v))
+
+        return item
+
+    @classmethod
+    def _build_data_model_config(cls, cfg: Dict[str, Any]) -> DataModelConfig:
+        dm = DataModelConfig()
+        dm.path = cfg['path']
+        dm.version = cfg['version']
+        for itm in cfg.get('items', []):
+            dm.items.append(cls._build_data_item_config(itm))
+        return dm
+
+    @classmethod
+    def _build_method_config(cls, cfg: Dict[str, Any]) -> MethodConfig:
+        mc = MethodConfig()
+        mc.path = cfg['path']
+        for p in cfg.get('params', []):
+            mc.params.append(cls._build_data_item_config(p))
+        for r in cfg.get('responses', []):
+            mc.responses.append(cls._build_response_config(r))
+        return mc
+
+    @classmethod
+    def _build_response_config(cls, cfg: Dict[str, Any]) -> ResponseConfig:
+        rc = ResponseConfig()
+        rc.code = cfg['code']
+        rc.type = config_pb2.ResponseType.Value(cfg['type'])
+        for p in cfg.get('props', []):
+            rc.props.append(cls._build_prop(p['key'], p['value']))
+        for b in cfg.get('body', []):
+            rc.body.append(cls._build_data_item_config(b))
+        return rc
+
+    @classmethod
+    def _build_subnode_config(cls, cfg: Dict[str, Any]) -> SubnodeConfig:
+        sn = SubnodeConfig()
+        sn.path = cfg['path']
+        for t in cfg.get('tags', []):
+            sn.tags.append(cls._build_data_item_config(t))
+        for m in cfg.get('methods', []):
+            sn.methods.append(cls._build_method_config(m))
+        for s in cfg.get('subnodes', []):
+            sn.subnodes.append(cls._build_subnode_config(s))
+        for key, val in cfg.get('props', {}).items():
+            sn.props.append(cls._build_prop(key, val))
+        return sn
+
+    @classmethod
+    def _build_prop(cls, key: str, val: Any) -> Prop:
+        p = Prop()
+        p.key = key
+        # TODO: Support all basedata types (except int, that will always map to long most likely)
+        p.type = BaseType.STRING
+        p.value.string_data = str(val)
+        return p
 
     @staticmethod
-    def _config_from_json5_obj(obj: dict[str, Any]):
-        if "key" not in obj:
-            raise LookupError(f"Keyword 'key' not found for node configuration")
-        config = NodeConfig(obj["key"])
+    def _map_base_type(name: str) -> BaseType:
+        mapping = {
+            'int': BaseType.INT,
+            'long': BaseType.LONG,
+            'float': BaseType.FLOAT,
+            'string': BaseType.STRING,
+            'bool': BaseType.BOOL,
+            'datetime': BaseType.DATETIME,
+        }
+        try:
+            return mapping[name]
+        except KeyError:
+            raise ValueError(f"Unknown base type: {name}")
 
-        for tag_json in obj.get("tags", []):
-            tag = PyDataItemConfig.from_json5(tag_json)
-            config.tags[tag.proto.path] = tag
-
-        # for method_json in obj.get("methods", []):
-        #     method = MethodConfig.from_json5(method_json)
-        #     config.methods[method.path] = method
-
-        # from gedge.node.subnode import SubnodeConfig
-        # for subnode_json in obj.get("subnodes", []):
-        #     subnode = SubnodeConfig.from_json5(subnode_json, config.ks)
-        #     config.subnodes[subnode.name] = subnode
-        
-        # return config
-
-
-# class NodeKeySpace:
-#     def __init__(self, prefix: str, name: str):
-#         self._prefix = prefix
-#         self._name = name
-#         self._user_key = key_join(prefix, name)
-#         self._set_keys(self.prefix, self.name)
-
-@dataclass
-class PyMethodConfig:
-    proto: proto.MethodConfig
-    # handler: MethodHandler | None
-
-@dataclass
-class PySubnodeConfig:
-    proto: proto.SubnodeConfig
-    
-    
-@dataclass
-class PyDataModelConfig:
-    proto: proto.DataModelConfig
-
-@dataclass
-class PyDataItemConfig:
-    proto: proto.DataItemConfig
-
-    @classmethod
-    def from_json5(cls, j: Any) -> Self:
-        if not isinstance(j, dict):
-            raise ValueError(f"invalid data item, expected dict, got {j}")
-        # TODO: validate path and type are present 
-        #validate if type is model or list[model], that the tag must include model_path
-        # TODO: validate model version exists 
-        for prop in j.get('props', {}).items():
-            pass
-        props = PyProp.from_json5()
-        if j['type'] == 'model' or j['type'] == 'list[model]':
-           pass
-        else:
-            pass
-
-@dataclass
-class PyProp:
-    proto: proto.Prop
-
-    @classmethod
-    def from_json5(cls, key: str, j: Any) -> Self:
-        if isinstance(j, dict):
-            # this is for if they want to specify both type and value
-            raise NotImplementedError
-        t = PyProp.intuit_type(j)
-        res = BaseData.from_value(j, t)
-        return cls(key, res)
- 
+    @staticmethod
+    def _default_model_version(model_path: str) -> int:
+        # TODO: scan model directory to pick latest version
+        return 1
