@@ -20,13 +20,14 @@ class NodeConfig:
     Load a JSON5-based configuration and compile it into a protobuf Meta message.
     """
 
-    def __init__(self, meta: Meta):
+    def __init__(self, meta: Meta, models_dir: str):
         self.meta = meta
+        self.model_dir = models_dir 
         # method callbacks
         # model file locations
 
     @classmethod
-    def from_json5(cls, path: str) -> Self:
+    def from_json5(cls, path: str, models_dir: str = "./models") -> Self:
         # Parse the JSON5 file
         with open(path, 'r') as fp:
             raw = json5.load(fp)
@@ -54,10 +55,10 @@ class NodeConfig:
         for key, val in raw.get('props', {}).items():
             m.props.append(cls._build_prop(key, val))
 
-        return cls(m)
+        return cls(m, models_dir = models_dir)
     
-    def use_models_at(path: str):
-        pass
+    def use_models_at(self, path: str):
+        self.model_dir = path
 
     @classmethod
     def _build_data_item_config(cls, cfg: Dict[str, Any]) -> DataItemConfig:
