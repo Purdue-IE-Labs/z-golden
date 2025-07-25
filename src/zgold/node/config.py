@@ -24,8 +24,6 @@ class NodeConfig:
     def __init__(self, meta: Meta):
         self.meta = meta
         self.models_used : set[str] = set()
-        # method callbacks
-        # model file locations
 
     @classmethod
     # default to ./models
@@ -39,19 +37,19 @@ class NodeConfig:
 
         # Tags
         for tag in raw.get('tags', []):
-            m.tags.append(cfg._build_data_item_config(tag))
+            cfg.meta.tags.append(cfg._build_data_item_config(tag))
 
         # Methods
         for method in raw.get('methods', []):
-            m.methods.append(cfg._build_method_config(method))
+            cfg.meta.methods.append(cfg._build_method_config(method))
  
         # Subnodes
         for sub in raw.get('subnodes', []):
-            m.subnodes.append(cfg._build_subnode_config(sub))
+            cfg.meta.subnodes.append(cfg._build_subnode_config(sub))
 
         # Props
-        for key, val in raw.get('props', {}).items():
-            m.props.append(cfg._build_prop(key, val))
+        for k, v in raw.get('props', {}).items():
+            cfg.meta.props.append(cfg._build_prop(k, v))
 
         # Models
         if len(cfg.models_used) > 0 :
@@ -60,7 +58,7 @@ class NodeConfig:
             if not pathlib.Path(models_dir).is_dir():
                 raise ValueError(f"Model configuration at path {path} is not a directory")
             
-            # Only attach models actually used in tags, methods, subnodes, (props?)
+            # Only attach models actually used in tags, methods, and subnodes
             for model in cfg.models_used:
                 model_path = models_dir / model
                 if not pathlib.Path(model_path).exists() or pathlib.Path(model_path).is_dir():
@@ -71,7 +69,7 @@ class NodeConfig:
                 
                 cfg.meta.models.append(cfg._build_data_model_config(raw_model))
             
-        return cfg    
+        return cfg
 
     def _build_data_item_config(self, cfg: Dict[str, Any]) -> DataItemConfig:
         # path, alias, is_list, oneof{model, base}, props
@@ -103,6 +101,8 @@ class NodeConfig:
         dm.version = cfg['version']
         for itm in cfg.get('items', []):
             dm.items.append(self._build_data_item_config(itm))
+        for k, v in cfg.get('props', {}).items():
+            dm.props.append(self._build_prop(k, v))
         return dm
 
     def _build_method_config(self, cfg: Dict[str, Any]) -> MethodConfig:
@@ -112,16 +112,19 @@ class NodeConfig:
             mc.params.append(self._build_data_item_config(p))
         for r in cfg.get('responses', []):
             mc.responses.append(self._build_response_config(r))
+        # Attach any props
+        for k, v in cfg.get('props', {}).items():
+            mc.props.append(self._build_prop(k, v))
         return mc
 
     def _build_response_config(self, cfg: Dict[str, Any]) -> ResponseConfig:
         rc = ResponseConfig()
         rc.code = cfg['code']
-        rc.type = config_pb2.ResponseType.Value(cfg['type'])
-        for p in cfg.get('props', []):
-            rc.props.append(self._build_prop(p['key'], p['value']))
+        rc.type = config_pb2.ResponseType.Value(cfg['type'].upper())
         for b in cfg.get('body', []):
             rc.body.append(self._build_data_item_config(b))
+        for k, v in cfg.get('props', {}).items():
+            rc.props.append(self._build_prop(k, v))
         return rc
 
     def _build_subnode_config(self, cfg: Dict[str, Any]) -> SubnodeConfig:
@@ -133,8 +136,10 @@ class NodeConfig:
             sn.methods.append(self._build_method_config(m))
         for s in cfg.get('subnodes', []):
             sn.subnodes.append(self._build_subnode_config(s))
-        for key, val in cfg.get('props', {}).items():
-            sn.props.append(self._build_prop(key, val))
+        for k, v in cfg.get('props', {}).items():
+            sn.props.append(self._build_prop(k, v))
+    
+
         return sn
 
     def _build_prop(self, key: str, val: Any) -> Prop:
@@ -145,7 +150,7 @@ class NodeConfig:
         p.value.string_data = str(val)
         return p
 
-    def _map_base_type(name: str) -> BaseType:
+    def _map_base_type(self, name: str) -> BaseType:
         mapping = {
             'int': BaseType.INT,
             'long': BaseType.LONG,
@@ -159,6 +164,6 @@ class NodeConfig:
         except KeyError:
             raise ValueError(f"Unknown base type: {name}")
 
-    def _default_model_version(model_path: str) -> int:
+    def _default_model_version(self, model_path: str) -> int:
         # TODO: scan model directory to pick latest version
         return 1

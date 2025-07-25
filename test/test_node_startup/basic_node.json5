@@ -22,6 +22,13 @@
       model_version: 2
     },
     {
+      path: "my_motor2",
+      type: "model",
+      model_path: "mechanical/motor",
+      model_version: 2
+    },
+ 
+    {
       path: "open_workorders",
       type: "list[model]",
       model_path: "MES/workorder", // If no version is specified, default to latest that is found in model directory

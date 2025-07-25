@@ -69,24 +69,28 @@ class Prop(_message.Message):
     def __init__(self, key: _Optional[str] = ..., type: _Optional[_Union[BaseType, str]] = ..., value: _Optional[_Union[_base_data_pb2.BaseData, _Mapping]] = ...) -> None: ...
 
 class DataModelConfig(_message.Message):
-    __slots__ = ("path", "version", "items")
+    __slots__ = ("path", "version", "items", "props")
     PATH_FIELD_NUMBER: _ClassVar[int]
     VERSION_FIELD_NUMBER: _ClassVar[int]
     ITEMS_FIELD_NUMBER: _ClassVar[int]
+    PROPS_FIELD_NUMBER: _ClassVar[int]
     path: str
     version: int
     items: _containers.RepeatedCompositeFieldContainer[DataItemConfig]
-    def __init__(self, path: _Optional[str] = ..., version: _Optional[int] = ..., items: _Optional[_Iterable[_Union[DataItemConfig, _Mapping]]] = ...) -> None: ...
+    props: _containers.RepeatedCompositeFieldContainer[Prop]
+    def __init__(self, path: _Optional[str] = ..., version: _Optional[int] = ..., items: _Optional[_Iterable[_Union[DataItemConfig, _Mapping]]] = ..., props: _Optional[_Iterable[_Union[Prop, _Mapping]]] = ...) -> None: ...
 
 class MethodConfig(_message.Message):
-    __slots__ = ("path", "params", "responses")
+    __slots__ = ("path", "params", "responses", "props")
     PATH_FIELD_NUMBER: _ClassVar[int]
     PARAMS_FIELD_NUMBER: _ClassVar[int]
     RESPONSES_FIELD_NUMBER: _ClassVar[int]
+    PROPS_FIELD_NUMBER: _ClassVar[int]
     path: str
     params: _containers.RepeatedCompositeFieldContainer[DataItemConfig]
     responses: _containers.RepeatedCompositeFieldContainer[ResponseConfig]
-    def __init__(self, path: _Optional[str] = ..., params: _Optional[_Iterable[_Union[DataItemConfig, _Mapping]]] = ..., responses: _Optional[_Iterable[_Union[ResponseConfig, _Mapping]]] = ...) -> None: ...
+    props: _containers.RepeatedCompositeFieldContainer[Prop]
+    def __init__(self, path: _Optional[str] = ..., params: _Optional[_Iterable[_Union[DataItemConfig, _Mapping]]] = ..., responses: _Optional[_Iterable[_Union[ResponseConfig, _Mapping]]] = ..., props: _Optional[_Iterable[_Union[Prop, _Mapping]]] = ...) -> None: ...
 
 class ResponseConfig(_message.Message):
     __slots__ = ("code", "type", "props", "body")

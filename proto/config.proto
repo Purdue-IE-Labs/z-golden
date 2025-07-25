@@ -38,12 +38,14 @@ message DataModelConfig {
     string path = 1;
     int32 version = 2;
     repeated DataItemConfig items = 3;
+    repeated Prop props = 4;
 }
 
 message MethodConfig {
     string path = 1;
     repeated DataItemConfig params = 2;
     repeated ResponseConfig responses = 3;
+    repeated Prop props = 4;
 }
 
 message ResponseConfig {
