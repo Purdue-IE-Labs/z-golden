@@ -1,0 +1,16 @@
+{
+    path: "mechanical\\motor",
+    version: 1,
+    items: [
+        {
+            path: "mechanical\\motor\item",
+            type: "int",
+            props: {
+                desc: "a motor model item"
+            }
+        }
+    ],
+    props: {
+        desc: "a motor model"
+    }
+}

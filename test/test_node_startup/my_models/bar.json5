@@ -1,0 +1,16 @@
+{
+    path: "bar",
+    version: 1,
+    items: [
+        {
+            path: "bar\item",
+            type: "int",
+            props: {
+                desc: "a bar model item"
+            }
+        }
+    ],
+    props: {
+        desc: "a bar model"
+    }
+}

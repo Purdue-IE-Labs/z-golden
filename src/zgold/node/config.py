@@ -60,7 +60,25 @@ class NodeConfig:
             
             # Only attach models actually used in tags, methods, and subnodes
             for model in cfg.models_used:
-                model_path = models_dir / model
+                '''
+                The string definition "model_path = models_dir / model" was invalid, I switched it to "model_path = f'{models_dir}\{model}.json5'"
+
+                Also, when doing the file operations we need the slashes representing the file path to be be forward slashes ('\')
+                I figured there were two cases we could use. 
+                Case 1: Have the user use forward slashes in the config as shown below:
+                {
+                    path: "my_motor",
+                    type: "model",
+                    model_path: "mechanical\\motor",
+                    model_version: 2
+                }
+                Case 2: We could use .replace() to replace the forward slashes for back slashes:
+                model_path = f"{models_dir}\{model.replace("/", "\\")}.json5"
+
+                The issue with Case 2 though is that there might be a misinterpretation whewre say a user had the path foo/bar\\bar where the name of the folder is "foo/bar". Then we'd replace the path to be foo\\bar\\bar
+                '''
+                
+                model_path = f"{models_dir}\{model}.json5"
                 if not pathlib.Path(model_path).exists() or pathlib.Path(model_path).is_dir():
                     raise ValueError(f"Model configuration file at path {model_path} is not found")
 

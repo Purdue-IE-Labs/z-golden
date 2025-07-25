@@ -3,17 +3,15 @@
   tags: [
     {
       path: "pump_1/temp",
-      type: "int",
-      props: {
-        desc: "temp of the pump"
-      }
+      type: "model",
+      model_path: "mechanical\\motor",
+      model_version: 1
     },
     {
       path: "joints/position",
-      type: "list[float]",
-      props: {
-        UoM: "deg"
-      }
+      type: "model",
+      model_path: "MES\\workorder",
+      model_version: 0
     },
     {
       path: "my_motor",
@@ -40,16 +38,15 @@
       params: [
           {
               path: "param1",
-              type: "int",
-              props: {
-                  desc: "name of the project"
-              }
+              type: "model",
+              model_path: "mechanical\\motor",
+              model_version: 3
           },
           {
               path: "param2",
               type: "model",
               model_path: "bar",
-              model_version: 2
+              model_version: 100
           }
       ],
       responses: [
@@ -59,10 +56,9 @@
               body: [
                   {
                       path: "res1",
-                      type: "int",
-                      props: {
-                          desc: "a body item named res1"
-                      }
+                      type: "model",
+                      model_path: "bar",
+                      model_version: 150
                   }
               ],
               props: {
@@ -75,7 +71,9 @@
               body: [
                   {
                       path: "res1",
-                      type: "int"
+                      type: "model",
+                      model_path: "bar",
+                      model_version: 1000
                   }
               ],
           },
