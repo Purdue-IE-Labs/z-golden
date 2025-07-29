@@ -220,7 +220,7 @@ class NodeConfig:
                 parts.extend(str(prop.type)) if prop.type else None
                 parts.extend(str(prop.value)) if prop.value else None
 
-        parts.extend(str(time.time_ns()))
+        # parts.extend(str(time.time_ns()))
         key = "|".join(parts)
 
         h = hashlib.sha1(key.encode()).hexdigest()
