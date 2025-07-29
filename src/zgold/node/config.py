@@ -15,6 +15,10 @@ ResponseConfig = config_pb2.ResponseConfig
 SubnodeConfig = config_pb2.SubnodeConfig
 BaseType = config_pb2.BaseType
 
+all_prev_alias = {}
+import hashlib
+import time
+
 # TODO: Validate names against reserved keywords and characters in various programming languages and OS
 class NodeConfig:
     """
@@ -59,7 +63,9 @@ class NodeConfig:
                 raise ValueError(f"Model configuration at path {path} is not a directory")
             
             # Only attach models actually used in tags, methods, and subnodes
-            for model in cfg.models_used:
+
+            # changed from cfg.models_used to cfg.models_used.copy() since if there's a nested model it throws a runtime error but .copy() removes that issue
+            for model in cfg.models_used.copy():
                 '''
                 The string definition "model_path = models_dir / model" was invalid, I switched it to "model_path = f'{models_dir}\{model}.json5'"
 
@@ -100,16 +106,29 @@ class NodeConfig:
         # Unwrap list[...] if present
         inner = type_str[5:-1] if item.is_list else type_str
 
+        isModel = False
         if inner == 'model':
+            isModel = True
             self.models_used.add(cfg['model_path'])
             item.model.model_path = cfg['model_path']
             item.model.model_version = cfg.get('model_version', self._default_model_version(cfg['model_path']))
         else:
+            isModel = False
             item.base = self._map_base_type(inner)
 
         # Attach any props
         for k, v in cfg.get('props', {}).items():
             item.props.append(self._build_prop(k, v))
+
+        alias = self.alias_hash(item, isModel)
+
+        for k, v in all_prev_alias.items():
+            if alias == v:
+                raise ValueError(f"Original: {k} Val: {v}, Duplicate: {item.path} Val: {alias}")
+        
+        all_prev_alias[item.path] = alias
+
+        print(alias)
 
         return item
 
@@ -185,3 +204,24 @@ class NodeConfig:
     def _default_model_version(self, model_path: str) -> int:
         # TODO: scan model directory to pick latest version
         return 1
+    
+    def alias_hash(self, item: DataItemConfig, is_model: bool):
+        parts = [
+            item.path,
+            str(item.is_list),
+        ]
+
+        if is_model and item.model:
+            parts.extend([item.model.model_path, str(item.model.model_version)])
+        else:
+            parts.extend(str(item.base))
+            for prop in item.props:
+                parts.extend(prop.key) if prop.key else None
+                parts.extend(str(prop.type)) if prop.type else None
+                parts.extend(str(prop.value)) if prop.value else None
+
+        parts.extend(str(time.time_ns()))
+        key = "|".join(parts)
+
+        h = hashlib.sha1(key.encode()).hexdigest()
+        return int(h[:8], 16)

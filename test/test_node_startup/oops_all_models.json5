@@ -9,7 +9,7 @@
     },
     {
       path: "joints/position",
-      type: "model",
+      type: "list[model]",
       model_path: "MES\\workorder",
       model_version: 0
     },
