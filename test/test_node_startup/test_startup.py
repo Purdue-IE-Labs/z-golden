@@ -7,12 +7,12 @@ import random
 class TestNodeConfig():
 
     @pytest.mark.parametrize("json_file", [
-        ("basic_node.json5"),
-        ("tag_node.json5"),
-        ("method_node.json5"),
-        ("oops_all_models.json5"),
-        ("just_key.json5"),
-        ("nested_model.json5")
+        ("json_files\\basic_node.json5"),
+        ("json_files\\tag_node.json5"),
+        ("json_files\\method_node.json5"),
+        ("json_files\\oops_all_models.json5"),
+        ("json_files\\just_key.json5"),
+        ("json_files\\nested_model.json5")
     ])
     def test_json_load(self, json_file):
         here = pathlib.Path(__file__).parent 
