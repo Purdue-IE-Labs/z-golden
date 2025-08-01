@@ -2,6 +2,7 @@ import json5
 from typing import Any, Dict, Self
 import pathlib
 import re
+from .test_input import test_input
 
 from zgold.proto import config_pb2
 
@@ -25,7 +26,12 @@ class NodeConfig:
     def __init__(self, meta: Meta):
         self.meta = meta
         self.models_used : set[str] = set()
-        self.alias_index: int = 1  
+        self.alias_index: int = 1
+        self.meta_key: str
+        self.state_key: str
+        self.tag_snap_key: str
+        self.tag_delta_key: str
+        
     @classmethod
     # default to ./models
     def from_json5(cls, path: str, models_dir: str) -> Self:
@@ -35,6 +41,7 @@ class NodeConfig:
         m = Meta()
         cfg = cls(m)
         cfg.meta.node_key = raw['key']
+        test_input(cfg.meta.node_key)
 
         # Tags
         for tag in raw.get('tags', []):
@@ -52,7 +59,7 @@ class NodeConfig:
         for k, v in raw.get('props', {}).items():
             cfg.meta.props.append(cfg._build_prop(k, v))
 
-        # Modelsa
+        # Models
         # TODO: Validate that model path is a valid zenoh key (no wildcards) - only standard characters and "/" for topic"
         if len(cfg.models_used) > 0 :
             if not pathlib.Path(models_dir).exists():
@@ -71,7 +78,15 @@ class NodeConfig:
                     raw_model = json5.load(model_file)
                 
                 cfg.meta.models.append(cfg._build_data_model_config(raw_model))
-                
+        
+        # Key Initializations
+        node_key_parts = cfg.meta.node_key.split("/")
+        node_prefix = f"{node_key_parts[0:-1]}/__NODE/{node_key_parts[-1]}"
+        cfg.meta_key = f"{node_prefix}/__META"
+        cfg.state_key = f"{node_prefix}/__STATE"
+        cfg.tag_snap_key = f"{node_prefix}/__TAGS/__SNAP"
+        cfg.tag_delta_key = f"{node_prefix}/__TAGS/__DELTA"
+        
         return cfg
 
     def _build_data_item_config(self, cfg: Dict[str, Any]) -> DataItemConfig:
@@ -79,7 +94,7 @@ class NodeConfig:
         # TODO: Add unique int alias to every data item 
         item = DataItemConfig()
         item.path = cfg['path']
-        self.test_input(item.path)
+        test_input(item.path)
 
         item.is_list = isinstance(cfg.get('type'), str) and cfg['type'].startswith('list[')
         type_str = cfg['type']
@@ -109,7 +124,7 @@ class NodeConfig:
     def _build_data_model_config(self, cfg: Dict[str, Any]) -> DataModelConfig:
         dm = DataModelConfig()
         dm.path = cfg['path']
-        self.test_input(dm.path)
+        test_input(dm.path)
 
         dm.version = cfg['version']
         for itm in cfg.get('items', []):
@@ -143,6 +158,8 @@ class NodeConfig:
     def _build_subnode_config(self, cfg: Dict[str, Any]) -> SubnodeConfig:
         sn = SubnodeConfig()
         sn.path = cfg['path']
+        test_input(sn.path)
+
         for t in cfg.get('tags', []):
             sn.tags.append(self._build_data_item_config(t))
         for m in cfg.get('methods', []):
@@ -180,104 +197,7 @@ class NodeConfig:
     def _default_model_version(self, model_path: str) -> int:
         # TODO: scan model directory to pick latest version
         return 1
-    
-    def test_input(self, key: str):
-        if key == "":
-            raise ValueError("Invalid Data Item: Key cannot be empty")
-        keyParts = key.split("/")
-        for part in keyParts:
-            # Keyword Tests
-            self.keyword_tests(part)
 
-            # Naming Tests
-            self.format_test(part)
-
-    def keyword_tests(self, key: str):
-        zenohKeywords = ["STATE", "LINK", "TAGS"]
-        self.list_test(key, zenohKeywords)
-        
-        sharedKeywords = [
-            "abstract", "and", "assert", "auto", "boolean", 
-            "break", "byte", "case", "catch", "char", 
-            "class", "const", "continue", "default", "delete", 
-            "do", "double", "else", "enum", "extends", 
-            "false", "final", "finally", "float", "for", 
-            "goto", "if", "implements", "import", "in", 
-            "instanceof", "int", "interface", "long", "native", 
-            "new", "not", "null", "or", "package", 
-            "private", "protected", "public", "return", "short", 
-            "signed", "sizeof", "static", "struct", "super", 
-            "switch", "synchronized", "this", "throw", "transient", 
-            "true", "try", "typedef", "union", "unsigned", "var", 
-            "void", "volatile", "while", "with", "yield"
-        ]
-        self.list_test(key, sharedKeywords)
-
-        pythonKeywords = [ 
-            "as", "def", "del", "elif", "except", "from", "global", "is", "lambda", "None", "nonlocal", "pass", "raise"
-        ]
-        self.list_test(key, pythonKeywords)
-
-        javaKeywords = [
-             "exports",  "module", "requires", "strictfp"
-        ]
-        self.list_test(key, javaKeywords)
-
-        javaScriptKeywords = [
-            "arguments", "await", "debugger", "eval", "export", "function","let", "throws", "typeof",
-        ]
-        self.list_test(key, javaScriptKeywords)
-
-        cKeywords = [
-            "extern", "register"
-        ]
-        self.list_test(key, cKeywords)
-
-        cPlusPlusKeywords = [
-            "and_eq", "bitand", "bitor", "bool", "compl", "friend", "namespace", "not_eq", "or_eq", "template", "using", "virtual", "xor", "xor_eq"
-        ]
-        self.list_test(key, cPlusPlusKeywords)
-
-        goKeywords = [
-            "chan", "defer", "fallthrough", "func", "go", "map", "range", "select", "type",
-        ]
-        self.list_test(key, goKeywords)
-
-        SQLKeywords = [
-            "ADD", "ADD CONSTRAINT", "ALL", "ALTER", "ALTER COLUMN",
-            "ALTER TABLE", "ANY", "AS", "ASC",
-            "BACKUP DATABASE", "BETWEEN", "CHECK", "COLUMN",
-            "CONSTRAINT", "CREATE", "CREATE DATABASE", "CREATE INDEX", "CREATE OR REPLACE VIEW",
-            "CREATE TABLE", "CREATE PROCEDURE", "CREATE UNIQUE INDEX", "CREATE VIEW", "DATABASE",
-            "DESC", "DISTINCT", "DROP", 
-            "DROP COLUMN", "DROP CONSTRAINT", "DROP DATABASE", "DROP DEFAULT", "DROP INDEX",
-            "DROP TABLE", "DROP VIEW", "EXEC", "EXISTS", "FOREIGN KEY", 
-            "FROM", "FULL OUTER JOIN", "GROUP BY", "HAVING",
-            "INDEX", "INNER JOIN", "INNER INTO", "INNER INTO SELECT", "IS NULL",
-            "IS NOT NULL", "JOIN", "LEFT JOIN", "LIKE", "LIMIT", 
-            "NOT NULL", "ORDER BY", "OUTER JOIN",
-            "PRIMARY KEY", "PROCEDURE", "RIGHT JOIN", "ROWNUM", "SELECT",
-            "SELECT DISTINCT", "SELECT INTO", "SELECT TOP", "SET", "TABLE",
-            "TOP", "TRUNCATE TABLE", "UNOIN ALL", "UNIQUE",
-            "UPDATE", "VALUES", "VIEW", "WHERE"
-        ]
-        self.list_test(key, SQLKeywords)
-
-    def list_test(self, key: str, list: list[str]):
-        for compKey in list:
-            if key == compKey:
-                raise ValueError(f"Invalid Data Item: '{key}' is a reserved keyword")
-            
-    def format_test(self, key: str):
-        # First character cannot be a number
-        if (re.search(r"[0-9]", key[0]) is not None):
-            raise ValueError(f"Invalid Data Item: {key} may not start with a number")
-        
-        # Python Convention, can only contain A-z, 0-9, and _ (more strict than others)
-        if re.search(r"[^A-Za-z0-9_]", key) is not None:
-            raise ValueError(f"Invalid Data Item: {key} may only contain A-Z, a-z, and _")
-        
-        # C++ Convention, variable names can range from 1 to 255
-        if len(key) > 255:
-            raise ValueError(f"Invalid Data Item: {key[0:255]}... is too long")
+    def key_stuff(self):
+        pass    
         
