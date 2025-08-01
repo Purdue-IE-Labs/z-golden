@@ -4,32 +4,32 @@
     {
       path: "pump_1/temp",
       type: "model",
-      model_path: "mechanical\\motor",
+      model_path: "mechanical/motor",
       model_version: 1
     },
     {
       path: "joints/position",
       type: "list[model]",
-      model_path: "MES\\workorder",
+      model_path: "MES/workorder",
       model_version: 0
     },
     {
       path: "my_motor",
       type: "model",
-      model_path: "mechanical\\motor",
+      model_path: "mechanical/motor",
       model_version: 2
     },
     {
       path: "my_motor2",
       type: "model",
-      model_path: "mechanical\\motor",
+      model_path: "mechanical/motor",
       model_version: 2
     },
  
     {
       path: "open_workorders",
       type: "list[model]",
-      model_path: "MES\\workorder", // If no version is specified, default to latest that is found in model directory
+      model_path: "MES/workorder", // If no version is specified, default to latest that is found in model directory
     }
   ],
   methods: [
@@ -39,7 +39,7 @@
           {
               path: "param1",
               type: "model",
-              model_path: "mechanical\\motor",
+              model_path: "mechanical/motor",
               model_version: 3
           },
           {

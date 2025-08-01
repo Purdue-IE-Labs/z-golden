@@ -18,20 +18,20 @@
     {
       path: "my_motor",
       type: "model",
-      model_path: "mechanical\\motor",
+      model_path: "mechanical/motor",
       model_version: 2
     },
     {
       path: "my_motor2",
       type: "model",
-      model_path: "mechanical\\motor",
+      model_path: "mechanical/motor",
       model_version: 2
     },
  
     {
       path: "open_workorders",
       type: "list[model]",
-      model_path: "MES\\nested_workorder", // If no version is specified, default to latest that is found in model directory
+      model_path: "MES/nested_workorder", // If no version is specified, default to latest that is found in model directory
     }
   ]
 }

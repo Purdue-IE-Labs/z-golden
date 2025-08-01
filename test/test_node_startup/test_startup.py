@@ -12,7 +12,12 @@ class TestNodeConfig():
         ("json_files\\method_node.json5"),
         ("json_files\\oops_all_models.json5"),
         ("json_files\\just_key.json5"),
-        ("json_files\\nested_model.json5")
+        ("json_files\\nested_model.json5"),
+        ("json_files\\keyword_error.json5"),
+        ("json_files\\format_error_0.json5"),
+        ("json_files\\format_error_1.json5"),
+        ("json_files\\format_error_2.json5"),
+        ("json_files\\format_error_3.json5"),
     ])
     def test_json_load(self, json_file):
         here = pathlib.Path(__file__).parent 

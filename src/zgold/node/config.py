@@ -1,6 +1,7 @@
 import json5
 from typing import Any, Dict, Self
 import pathlib
+import re
 
 from zgold.proto import config_pb2
 
@@ -78,6 +79,8 @@ class NodeConfig:
         # TODO: Add unique int alias to every data item 
         item = DataItemConfig()
         item.path = cfg['path']
+        self.test_input(item.path)
+
         item.is_list = isinstance(cfg.get('type'), str) and cfg['type'].startswith('list[')
         type_str = cfg['type']
 
@@ -87,6 +90,8 @@ class NodeConfig:
         if inner == 'model':
             self.models_used.add(cfg['model_path'])
             item.model.model_path = cfg['model_path']
+            if re.search(r"[^A-Za-z0-9/_\-.]", item.model.model_path) is not None:
+                raise ValueError(f"{item.model.model_path} contains a non alpha-numerical character")
             item.model.model_version = cfg.get('model_version', self._default_model_version(cfg['model_path']))
         else:
             item.base = self._map_base_type(inner)
@@ -104,6 +109,8 @@ class NodeConfig:
     def _build_data_model_config(self, cfg: Dict[str, Any]) -> DataModelConfig:
         dm = DataModelConfig()
         dm.path = cfg['path']
+        self.test_input(dm.path)
+
         dm.version = cfg['version']
         for itm in cfg.get('items', []):
             dm.items.append(self._build_data_item_config(itm))
@@ -174,3 +181,103 @@ class NodeConfig:
         # TODO: scan model directory to pick latest version
         return 1
     
+    def test_input(self, key: str):
+        if key == "":
+            raise ValueError("Invalid Data Item: Key cannot be empty")
+        keyParts = key.split("/")
+        for part in keyParts:
+            # Keyword Tests
+            self.keyword_tests(part)
+
+            # Naming Tests
+            self.format_test(part)
+
+    def keyword_tests(self, key: str):
+        zenohKeywords = ["STATE", "LINK", "TAGS"]
+        self.list_test(key, zenohKeywords)
+        
+        sharedKeywords = [
+            "abstract", "and", "assert", "auto", "boolean", 
+            "break", "byte", "case", "catch", "char", 
+            "class", "const", "continue", "default", "delete", 
+            "do", "double", "else", "enum", "extends", 
+            "false", "final", "finally", "float", "for", 
+            "goto", "if", "implements", "import", "in", 
+            "instanceof", "int", "interface", "long", "native", 
+            "new", "not", "null", "or", "package", 
+            "private", "protected", "public", "return", "short", 
+            "signed", "sizeof", "static", "struct", "super", 
+            "switch", "synchronized", "this", "throw", "transient", 
+            "true", "try", "typedef", "union", "unsigned", "var", 
+            "void", "volatile", "while", "with", "yield"
+        ]
+        self.list_test(key, sharedKeywords)
+
+        pythonKeywords = [ 
+            "as", "def", "del", "elif", "except", "from", "global", "is", "lambda", "None", "nonlocal", "pass", "raise"
+        ]
+        self.list_test(key, pythonKeywords)
+
+        javaKeywords = [
+             "exports",  "module", "requires", "strictfp"
+        ]
+        self.list_test(key, javaKeywords)
+
+        javaScriptKeywords = [
+            "arguments", "await", "debugger", "eval", "export", "function","let", "throws", "typeof",
+        ]
+        self.list_test(key, javaScriptKeywords)
+
+        cKeywords = [
+            "extern", "register"
+        ]
+        self.list_test(key, cKeywords)
+
+        cPlusPlusKeywords = [
+            "and_eq", "bitand", "bitor", "bool", "compl", "friend", "namespace", "not_eq", "or_eq", "template", "using", "virtual", "xor", "xor_eq"
+        ]
+        self.list_test(key, cPlusPlusKeywords)
+
+        goKeywords = [
+            "chan", "defer", "fallthrough", "func", "go", "map", "range", "select", "type",
+        ]
+        self.list_test(key, goKeywords)
+
+        SQLKeywords = [
+            "ADD", "ADD CONSTRAINT", "ALL", "ALTER", "ALTER COLUMN",
+            "ALTER TABLE", "ANY", "AS", "ASC",
+            "BACKUP DATABASE", "BETWEEN", "CHECK", "COLUMN",
+            "CONSTRAINT", "CREATE", "CREATE DATABASE", "CREATE INDEX", "CREATE OR REPLACE VIEW",
+            "CREATE TABLE", "CREATE PROCEDURE", "CREATE UNIQUE INDEX", "CREATE VIEW", "DATABASE",
+            "DESC", "DISTINCT", "DROP", 
+            "DROP COLUMN", "DROP CONSTRAINT", "DROP DATABASE", "DROP DEFAULT", "DROP INDEX",
+            "DROP TABLE", "DROP VIEW", "EXEC", "EXISTS", "FOREIGN KEY", 
+            "FROM", "FULL OUTER JOIN", "GROUP BY", "HAVING",
+            "INDEX", "INNER JOIN", "INNER INTO", "INNER INTO SELECT", "IS NULL",
+            "IS NOT NULL", "JOIN", "LEFT JOIN", "LIKE", "LIMIT", 
+            "NOT NULL", "ORDER BY", "OUTER JOIN",
+            "PRIMARY KEY", "PROCEDURE", "RIGHT JOIN", "ROWNUM", "SELECT",
+            "SELECT DISTINCT", "SELECT INTO", "SELECT TOP", "SET", "TABLE",
+            "TOP", "TRUNCATE TABLE", "UNOIN ALL", "UNIQUE",
+            "UPDATE", "VALUES", "VIEW", "WHERE"
+        ]
+        self.list_test(key, SQLKeywords)
+
+    def list_test(self, key: str, list: list[str]):
+        for compKey in list:
+            if key == compKey:
+                raise ValueError(f"Invalid Data Item: '{key}' is a reserved keyword")
+            
+    def format_test(self, key: str):
+        # First character cannot be a number
+        if (re.search(r"[0-9]", key[0]) is not None):
+            raise ValueError(f"Invalid Data Item: {key} may not start with a number")
+        
+        # Python Convention, can only contain A-z, 0-9, and _ (more strict than others)
+        if re.search(r"[^A-Za-z0-9_]", key) is not None:
+            raise ValueError(f"Invalid Data Item: {key} may only contain A-Z, a-z, and _")
+        
+        # C++ Convention, variable names can range from 1 to 255
+        if len(key) > 255:
+            raise ValueError(f"Invalid Data Item: {key[0:255]}... is too long")
+        

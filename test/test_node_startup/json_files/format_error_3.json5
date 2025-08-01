@@ -2,7 +2,7 @@
   key: "gedge/examples/tag_updates/updater",
   tags: [
     {
-      path: "pump_1/temp",
+      path: "",
       type: "int",
       props: {
         desc: "temp of the pump"
