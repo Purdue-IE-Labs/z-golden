@@ -19,6 +19,7 @@ class TestNodeConfig():
         json_config = here / json_file
         models_dir = here / "my_models"
         config = zg.NodeConfig.from_json5(str(json_config), models_dir=str(models_dir))
+        print(config.meta)
         ip_address = "localhost"
         with zg.connect(config, ip_address) as session:
             pass

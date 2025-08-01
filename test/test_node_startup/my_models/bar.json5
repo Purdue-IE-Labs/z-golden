@@ -3,7 +3,7 @@
     version: 1,
     items: [
         {
-            path: "bar\item",
+            path: "bar/item",
             type: "int",
             props: {
                 desc: "a bar model item"

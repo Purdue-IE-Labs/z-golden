@@ -1,11 +1,11 @@
 {
-    path: "MES\\nested_workorder",
+    path: "MES/nested_workorder",
     version: 1,
     items: [
         {
             path: "open_workorders",
             type: "list[model]",
-            model_path: "MES\\workorder", // If no version is specified, default to latest that is found in model directory
+            model_path: "MES/workorder", // If no version is specified, default to latest that is found in model directory
         }
     ],
     props: {

@@ -1,9 +1,9 @@
 {
-    path: "mechanical\\motor",
+    path: "mechanical/motor",
     version: 1,
     items: [
         {
-            path: "mechanical\\motor\item",
+            path: "mechanical/motor/item",
             type: "int",
             props: {
                 desc: "a motor model item"

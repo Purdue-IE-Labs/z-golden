@@ -15,10 +15,6 @@ ResponseConfig = config_pb2.ResponseConfig
 SubnodeConfig = config_pb2.SubnodeConfig
 BaseType = config_pb2.BaseType
 
-all_prev_alias = {}
-import hashlib
-import time
-
 # TODO: Validate names against reserved keywords and characters in various programming languages and OS
 class NodeConfig:
     """
@@ -28,7 +24,7 @@ class NodeConfig:
     def __init__(self, meta: Meta):
         self.meta = meta
         self.models_used : set[str] = set()
-
+        self.alias_index: int = 1  
     @classmethod
     # default to ./models
     def from_json5(cls, path: str, models_dir: str) -> Self:
@@ -55,7 +51,8 @@ class NodeConfig:
         for k, v in raw.get('props', {}).items():
             cfg.meta.props.append(cfg._build_prop(k, v))
 
-        # Models
+        # Modelsa
+        # TODO: Validate that model path is a valid zenoh key (no wildcards) - only standard characters and "/" for topic"
         if len(cfg.models_used) > 0 :
             if not pathlib.Path(models_dir).exists():
                 raise ValueError(f"Model configuration at path {path} does not exist")
@@ -63,36 +60,17 @@ class NodeConfig:
                 raise ValueError(f"Model configuration at path {path} is not a directory")
             
             # Only attach models actually used in tags, methods, and subnodes
-
             # changed from cfg.models_used to cfg.models_used.copy() since if there's a nested model it throws a runtime error but .copy() removes that issue
             for model in cfg.models_used.copy():
-                '''
-                The string definition "model_path = models_dir / model" was invalid, I switched it to "model_path = f'{models_dir}\{model}.json5'"
-
-                Also, when doing the file operations we need the slashes representing the file path to be be forward slashes ('\')
-                I figured there were two cases we could use. 
-                Case 1: Have the user use forward slashes in the config as shown below:
-                {
-                    path: "my_motor",
-                    type: "model",
-                    model_path: "mechanical\\motor",
-                    model_version: 2
-                }
-                Case 2: We could use .replace() to replace the forward slashes for back slashes:
-                model_path = f"{models_dir}\{model.replace("/", "\\")}.json5"
-
-                The issue with Case 2 though is that there might be a misinterpretation whewre say a user had the path foo/bar\\bar where the name of the folder is "foo/bar". Then we'd replace the path to be foo\\bar\\bar
-                '''
-                
-                model_path = f"{models_dir}\{model}.json5"
-                if not pathlib.Path(model_path).exists() or pathlib.Path(model_path).is_dir():
-                    raise ValueError(f"Model configuration file at path {model_path} is not found")
+                model_path = pathlib.Path(f"{models_dir}\{model}.json5")
+                if not model_path.exists() or model_path.is_dir():
+                    raise ValueError(f"Model configuration file at path {str(model_path)} is not found")
 
                 with open(model_path, "r") as model_file:
                     raw_model = json5.load(model_file)
                 
                 cfg.meta.models.append(cfg._build_data_model_config(raw_model))
-            
+                
         return cfg
 
     def _build_data_item_config(self, cfg: Dict[str, Any]) -> DataItemConfig:
@@ -106,29 +84,20 @@ class NodeConfig:
         # Unwrap list[...] if present
         inner = type_str[5:-1] if item.is_list else type_str
 
-        isModel = False
         if inner == 'model':
-            isModel = True
             self.models_used.add(cfg['model_path'])
             item.model.model_path = cfg['model_path']
             item.model.model_version = cfg.get('model_version', self._default_model_version(cfg['model_path']))
         else:
-            isModel = False
             item.base = self._map_base_type(inner)
 
         # Attach any props
         for k, v in cfg.get('props', {}).items():
             item.props.append(self._build_prop(k, v))
 
-        alias = self.alias_hash(item, isModel)
-
-        for k, v in all_prev_alias.items():
-            if alias == v:
-                raise ValueError(f"Original: {k} Val: {v}, Duplicate: {item.path} Val: {alias}")
-        
-        all_prev_alias[item.path] = alias
-
-        print(alias)
+        # Assign unique alias to each data item 
+        item.alias = self.alias_index
+        self.alias_index += 1
 
         return item
 
@@ -205,23 +174,3 @@ class NodeConfig:
         # TODO: scan model directory to pick latest version
         return 1
     
-    def alias_hash(self, item: DataItemConfig, is_model: bool):
-        parts = [
-            item.path,
-            str(item.is_list),
-        ]
-
-        if is_model and item.model:
-            parts.extend([item.model.model_path, str(item.model.model_version)])
-        else:
-            parts.extend(str(item.base))
-            for prop in item.props:
-                parts.extend(prop.key) if prop.key else None
-                parts.extend(str(prop.type)) if prop.type else None
-                parts.extend(str(prop.value)) if prop.value else None
-
-        # parts.extend(str(time.time_ns()))
-        key = "|".join(parts)
-
-        h = hashlib.sha1(key.encode()).hexdigest()
-        return int(h[:8], 16)

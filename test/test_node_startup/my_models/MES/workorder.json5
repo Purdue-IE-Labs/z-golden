@@ -1,9 +1,9 @@
 {
-    path: "MES\\workorder",
+    path: "MES/workorder",
     version: 1,
     items: [
         {
-            path: "MES\\workorder\item",
+            path: "MES/workorder/item",
             type: "int",
             props: {
                 desc: "a workorder model item"
