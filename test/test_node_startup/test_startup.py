@@ -20,6 +20,7 @@ class TestNodeConfig():
         models_dir = here / "my_models"
         config = zg.NodeConfig.from_json5(str(json_config), models_dir=str(models_dir))
         print(config.meta)
-        ip_address = "localhost"
-        with zg.connect(config, ip_address) as session:
+        router_link1 = "localhost:7447"
+        router_link2 = "localhost:4775"
+        with zg.connect(config, router_link1, router_link2) as session:
             pass
