@@ -22,6 +22,7 @@ class Comm:
         })
         self.config = config
         self.links = links
+        self._metas: dict[str, bytes] = {}
 
     def connect(self):
         self.__enter__()
@@ -44,6 +45,17 @@ class Comm:
         # Seriealize
         b = value.SerializeToString()
         b = base64.b64encode(b)
+
+        if isinstance(value, Meta):
+            self._metas[key] = b
+
+            def _meta_handler(query: zenoh.Query):
+                query.reply(
+                    key_expr=key,
+                    payload=self._metas[key],
+                    encoding="application/protobuf")
+            
+            self.session.declare_queryable(key, _meta_handler)
 
         self.session.put(key, b, encoding="application/protobuf")
     

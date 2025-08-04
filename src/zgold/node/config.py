@@ -70,7 +70,7 @@ class NodeConfig:
             # Only attach models actually used in tags, methods, and subnodes
             # changed from cfg.models_used to cfg.models_used.copy() since if there's a nested model it throws a runtime error but .copy() removes that issue
             for model in cfg.models_used.copy():
-                model_path = pathlib.Path(f"{models_dir}\{model}.json5")
+                model_path = pathlib.Path(f"{models_dir}\\{model}.json5")
                 if not model_path.exists() or model_path.is_dir():
                     raise ValueError(f"Model configuration file at path {str(model_path)} is not found")
 
@@ -81,7 +81,7 @@ class NodeConfig:
         
         # Key Initializations
         node_key_parts = cfg.meta.node_key.split("/")
-        node_prefix = f"{node_key_parts[0:-1]}/__NODE/{node_key_parts[-1]}"
+        node_prefix = f"{'/'.join(node_key_parts[0:-1])}/__NODE/{node_key_parts[-1]}"
         cfg.meta_key = f"{node_prefix}/__META"
         cfg.state_key = f"{node_prefix}/__STATE"
         cfg.tag_snap_key = f"{node_prefix}/__TAGS/__SNAP"
